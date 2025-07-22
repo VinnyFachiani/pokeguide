@@ -6,7 +6,6 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import dotenv from 'dotenv';
 // Importa a função respawnPokemon do seu arquivo respawns.js
 import { respawnPokemon } from './respawns.js'; // Adicione .js se estiver usando módulos ES6 em Node.js
-import http from 'http'; // Importa o módulo HTTP nativo do Node.js
 
 // Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
@@ -91,18 +90,3 @@ bot.on('messageCreate', async message => { // Adicionado 'async' aqui
 // Faz o login do bot usando o token do Discord
 // O token deve ser carregado de uma variável de ambiente por segurança
 bot.login(process.env.DISCORD_BOT_TOKEN);
-
-// Este servidor é apenas um "placeholder" para satisfazer a Vercel.
-const PORT = process.env.PORT || 3000; // Usa a porta fornecida pela Vercel ou 3000 por padrão
-
-const server = http.createServer((req, res) => {
-    // Responde a qualquer requisição HTTP com um status 200 OK
-    // e uma mensagem simples. Isso indica à Vercel que o serviço está "vivo".
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Discord Bot is running and listening for commands!\n');
-});
-
-server.listen(PORT, () => {
-    console.log(`Servidor HTTP de saúde rodando na porta ${PORT}`);
-    console.log('Isso é para satisfazer a Vercel. O bot Discord opera via WebSockets.');
-});

@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 // Define o caminho para o arquivo JSON.
 // Certifique-se de que o caminho relativo './data/datarespawns.json' está correto
 // em relação ao local onde 'respawns.js' está.
-const databoxPath = path.join(__dirname, 'data', 'datarespawns.json');
+const datarespawnsPath = path.join(__dirname, 'data', 'datarespawns.json');
 
 // Variável para armazenar os dados do Pokémon, carregada uma vez.
 let pokemonData = null;
@@ -30,16 +30,16 @@ async function loadPokemonData() {
     }
     try {
         // Lê o conteúdo do arquivo JSON de forma assíncrona
-        const fileContent = await fs.readFile(databoxPath, 'utf8');
+        const fileContent = await fs.readFile(datarespawnsPath, 'utf8');
         // Faz o parseamento do conteúdo JSON
         // A nova estrutura JSON é um array diretamente, então não há necessidade de .respawns
         pokemonData = JSON.parse(fileContent);
-        console.log("Dados de Box dos Pokémon carregados com sucesso!");
+        console.log("Dados de Pokémon carregados com sucesso!");
         return pokemonData;
     } catch (error) {
-        console.error("Erro ao carregar datarespawns.json:", error);
+        console.error("Erro ao carregar databox.json:", error);
         // Lança o erro para que a função chamadora possa lidar com ele
-        throw new Error("Não foi possível carregar os dados de respawn.");
+        throw new Error("Não foi possível carregar os dados das Box.");
     }
 }
 
@@ -51,10 +51,10 @@ function pLM(str) {
 
 /**
  * Função assíncrona para buscar as coordenadas de respawn de um Pokémon e enviá-las para um canal.
- * @param {string} pokemonName - O nome do Pokémon a ser pesquisado.
+ * @param {string} boxNumero - O nome do Pokémon a ser pesquisado.
  * @param {object} channel - O objeto do canal do Discord para enviar a mensagem.
  */
-export async function respawnPokemon(pokemonName, channel) {
+export async function pokesBox(boxNumero, channel) {
     // Garante que os dados do Pokémon sejam carregados antes de prosseguir
     try {
         if (!pokemonData) { // Carrega os dados apenas se ainda não estiverem carregados
@@ -67,14 +67,14 @@ export async function respawnPokemon(pokemonName, channel) {
 
     // Verifica se o nome do Pokémon foi fornecido
     if (!pokemonName) {
-        await channel.send('Por favor, forneça o nome do Pokémon que deseja as coordenadas do respawn. \nExemplo: !respawn bulbasaur');
+        await channel.send('Por favor, forneça o numero da Box que deseja ver os pokemons que podem vir. \nExemplo: !box 1');
         return; // Sai da função se o nome não for fornecido
     }
 
     // Procura TODOS os Pokémons que correspondem ao nome no array de dados
     // Usamos filter() para encontrar todas as ocorrências
     const foundPokemons = pokemonData.filter(respawn =>
-        respawn.pokemon.name.toLowerCase() === pokemonName.toLowerCase()
+        respawn.pokemon.name === pokemonName
     );
 
     // Formata o nome do Pokémon para ter apenas a primeira letra maiúscula

@@ -85,6 +85,10 @@ bot.on('messageCreate', async message => { // Adicionado 'async' aqui
         // Envia a mensagem com a embed
         message.channel.send({ embeds: [embed] });
     }
+
+    else {
+        message.channel.send('Comando não reconhecido. Use !comandos para ver os comandos disponíveis.');
+    }
 });
 
 // Faz o login do bot usando o token do Discord

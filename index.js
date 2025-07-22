@@ -86,7 +86,7 @@ bot.on('messageCreate', async message => { // Adicionado 'async' aqui
         message.channel.send({ embeds: [embed] });
     }
 
-    else {
+    else if(message.content.startsWith('!')) {
         message.channel.send('Comando não reconhecido. Use !comandos para ver os comandos disponíveis.');
     }
 });

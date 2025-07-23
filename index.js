@@ -6,6 +6,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import dotenv from 'dotenv';
 // Importa a função respawnPokemon do seu arquivo respawns.js
 import { respawnPokemon } from './respawns.js'; // Adicione .js se estiver usando módulos ES6 em Node.js
+import { pokesBox } from './box.js'; // Adicione .js se estiver usando módulos ES6 em Node.js
 
 // Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
@@ -32,12 +33,7 @@ bot.on('messageCreate', async message => { // Adicionado 'async' aqui
     if (message.author.bot) return;
 
     // Verifica se o conteúdo da mensagem é exatamente '!Who are you?'
-    if (message.content === '!Who are you?') {
-        // Envia a resposta no mesmo canal onde a mensagem foi enviada
-        message.channel.send('New Bot!');
-    }
-    // Verifica se a mensagem começa com '!respawn'
-    else if (message.content.startsWith('!respawn')) {
+    if (message.content.startsWith('!respawn')) {
         // Extrai o nome do Pokémon da mensagem (ex: '!respawn Bulbassauro' -> 'Bulbassauro')
         const args = message.content.split(' ');
         const pokemonName = args[1]; // O nome do Pokémon é o segundo elemento
@@ -62,7 +58,8 @@ bot.on('messageCreate', async message => { // Adicionado 'async' aqui
 
     else if (message.content.startsWith('!comandos')) {
         // Extrai o nome da Task da mensagem (ex: '!quest Bulbassauro' -> 'Bulbassauro')
-        const comandos = '**!respawn [nome do Pokémon]** - Envia as coordenadas de respawn do Pokémon especificado.\n'
+        var comandos = '**!respawn [nome do Pokémon]** - Envia as coordenadas de respawn do Pokémon especificado.\n\n'
+        comandos += '**!box [número 1 à 4]** - Mostra os Pokemons que podem vir em cada Box.\n\n'
 
         const embed = {
             color: 0x0099ff, // Cor da barra lateral da embed (azul)
@@ -87,7 +84,7 @@ bot.on('messageCreate', async message => { // Adicionado 'async' aqui
     }
 
     else if(message.content.startsWith('!')) {
-        message.channel.send('Comando não reconhecido. Use !comandos para ver os comandos disponíveis.');
+        message.channel.send(`${message.author} comando ${message.content} não reconhecido.\nUse !comandos para ver os comandos disponíveis.`);
     }
 });
 

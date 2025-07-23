@@ -15,27 +15,27 @@ const __dirname = path.dirname(__filename);
 // Define o caminho para o arquivo JSON.
 // Certifique-se de que o caminho relativo './data/datarespawns.json' está correto
 // em relação ao local onde 'respawns.js' está.
-const dataPokemonPath = path.join(__dirname, 'data', 'datarespawns.json');
+const databoxPath = path.join(__dirname, 'data', 'databox.json');
 
 // Variável para armazenar os dados do Pokémon, carregada uma vez.
-let pokemonData = null;
+let boxData = null;
 
 /**
  * Função assíncrona para carregar os dados do JSON.
  * Esta função será chamada uma vez para carregar os dados.
  */
 async function loadPokemonData() {
-    if (pokemonData) {
-        return pokemonData; // Retorna os dados se já estiverem carregados
+    if (boxData) {
+        return boxData; // Retorna os dados se já estiverem carregados
     }
     try {
         // Lê o conteúdo do arquivo JSON de forma assíncrona
-        const fileContent = await fs.readFile(dataPokemonPath, 'utf8');
+        const fileContent = await fs.readFile(databoxPath, 'utf8');
         // Faz o parseamento do conteúdo JSON
         // A nova estrutura JSON é um array diretamente, então não há necessidade de .respawns
-        pokemonData = JSON.parse(fileContent);
+        boxData = JSON.parse(fileContent);
         console.log("Dados de Box dos Pokémon carregados com sucesso!");
-        return pokemonData;
+        return boxData;
     } catch (error) {
         console.error("Erro ao carregar datarespawns.json:", error);
         // Lança o erro para que a função chamadora possa lidar com ele
@@ -44,20 +44,16 @@ async function loadPokemonData() {
 }
 
 
-function pLM(str) {
-  if (!str) return str; // Retorna a string original se estiver vazia
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 /**
  * Função assíncrona para buscar as coordenadas de respawn de um Pokémon e enviá-las para um canal.
- * @param {string} pokemonName - O nome do Pokémon a ser pesquisado.
+ * @param {string} boxNumero - O nome do Pokémon a ser pesquisado.
  * @param {object} channel - O objeto do canal do Discord para enviar a mensagem.
  */
-export async function respawnPokemon(pokemonName, channel) {
+export async function pokesBox(boxNumero, channel) {
     // Garante que os dados do Pokémon sejam carregados antes de prosseguir
     try {
-        if (!pokemonData) { // Carrega os dados apenas se ainda não estiverem carregados
+        if (!boxData) { // Carrega os dados apenas se ainda não estiverem carregados
             await loadPokemonData();
         }
     } catch (error) {
@@ -66,39 +62,35 @@ export async function respawnPokemon(pokemonName, channel) {
     }
 
     // Verifica se o nome do Pokémon foi fornecido
-    if (!pokemonName) {
+    if (!boxNumero) {
         await channel.send('Por favor, forneça o nome do Pokémon que deseja as coordenadas do respawn. \nExemplo: !respawn bulbasaur');
         return; // Sai da função se o nome não for fornecido
     }
 
     // Procura TODOS os Pokémons que correspondem ao nome no array de dados
     // Usamos filter() para encontrar todas as ocorrências
-    const foundPokemons = pokemonData.filter(respawn =>
-        respawn.pokemon.name.toLowerCase() === pokemonName.toLowerCase()
+    const foundBox = boxData.filter(box =>
+        box.box === boxNumero
     );
 
-    // Formata o nome do Pokémon para ter apenas a primeira letra maiúscula
-    const formattedPokemonName = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1).toLowerCase();
-
     // Se Pokémons forem encontrados
-    if (foundPokemons.length > 0) {
+    if (foundBox.length > 0) {
         let coordsString = '';
         // Itera sobre cada Pokémon encontrado para coletar suas coordenadas
-        for (const pokemon of foundPokemons) {
+        for (const box of foundBox) {
             // A coordenada agora está diretamente em 'pokemon.coords'
-            coordsString += `\n:map:  **Região**: *${pLM(pokemon.region)}*  :pushpin: **Coordenada**: *${pokemon.coords}*`;
+            coordsString = box.pokemons;
         }
 
-        // Pega o ícone do primeiro Pokémon encontrado (assumindo que todos os ícones são os mesmos para o mesmo Pokémon)
-        const pokemonIconUrl = foundPokemons[0].pokemon.icon;
+        const boxIconurl = foundBox[0].icon;
 
         // Cria uma Embed para a mensagem
         const embed = {
             color: 0x0099ff, // Cor da barra lateral da embed (azul)
-            title: `Coordenadas do Respawn de ${formattedPokemonName}`,
+            title: `Pokémons da Box ${foundBox[0].box}`,
             description: coordsString,
             thumbnail: { // O ícone do Pokémon será exibido como thumbnail
-                url: pokemonIconUrl,
+                url: boxIconurl,
             },
             // Você pode adicionar mais campos se quiser, por exemplo:
             // fields: [
@@ -116,6 +108,6 @@ export async function respawnPokemon(pokemonName, channel) {
 
     } else {
         // Se o Pokémon não for encontrado
-        await channel.send(`Pokémon "${formattedPokemonName}" não encontrado respawn.`);
+        await channel.send(`Box não encontrado na lista.`);
     }
 }
